@@ -23,7 +23,6 @@ class LoginScreen extends StatelessWidget {
             children: [
               Image.asset('assets/images/logo.png', width: 300, height: 300, alignment: Alignment.center),
               TextField(
-                textAlign: TextAlign.center,
                 decoration: InputDecoration(
                   fillColor: Colors.white,
                   filled: true,
@@ -34,7 +33,6 @@ class LoginScreen extends StatelessWidget {
               ),
               SizedBox(height: 20),
               TextField(
-                textAlign: TextAlign.center,
                 decoration: InputDecoration(
                   fillColor: Colors.white,
                   filled: true,
