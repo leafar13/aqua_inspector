@@ -1,0 +1,85 @@
+ classDiagram
+    class WaterSystem {
+        int id
+        int waterAssociationId
+        String waterAssociationName
+        String systemName
+        int systemNumber
+        boolean active
+        DateTime createdDate
+    }
+
+    class WaterSystemAssociation {
+        int id
+        String name
+        boolean active
+        DateTime createdDate
+    }
+
+    class Organization {
+        int id
+        String name
+        boolean active
+        DateTime createdDate
+    }
+
+    class WaterAssociation {
+        int id
+        int organizationId
+        String organizationName
+        String name
+        boolean active
+        DateTime createdDate
+    }
+
+    class User {
+        int id
+        String fullName
+        String email
+        String username
+        int organizationId
+        String organizationName
+        boolean active
+        DateTime createdDate
+    }
+
+    class Role {
+        int id
+        String name
+        String description
+        boolean active
+        DateTime createdDate
+    }
+
+    class WaterSample {
+        int id
+        String sampleNumber
+        int waterAssociationId
+        int systemId
+        int samplingUserId
+        DateTime samplingDatetime
+        float gpsLatitude
+        float gpsLongitude
+        String locationName
+        String observations
+        boolean synchronizedFlag
+        DateTime createdDate
+    }
+
+    class WaterParameters {
+        int id
+        int sampleId
+        float temperature
+        float ph
+        String parameterObservations
+        DateTime registrationDate
+    }
+
+    WaterSystem --> WaterAssociation : belongs to
+    WaterAssociation --> Organization : belongs to
+    User --> Organization : belongs to
+    User --> Role : has
+    WaterSample --> WaterAssociation : taken from
+    WaterSample --> WaterSystem : taken at
+    WaterSample --> User : sampled by
+    WaterSample --> WaterParameters : has 
