@@ -1,0 +1,8 @@
+# =============================================================================
+# CODEOWNERS - AquaInspector
+# =============================================================================
+# Los cambios a nivel de todo el proyecto van a requerir la aprobacion de 
+# los colaboradores expertos cuando se hagan via Pull Request.
+
+# Propietario principal - requiere aprobación en PRs
+* @gomezmedinamoises
