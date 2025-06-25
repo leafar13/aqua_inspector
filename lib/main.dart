@@ -1,4 +1,4 @@
-import 'package:aqua_inspector/login_screen.dart';
+import 'package:aqua_inspector/features/auth/presentation/pages/login_screen.dart';
 import 'package:flutter/material.dart';
 
 void main() {

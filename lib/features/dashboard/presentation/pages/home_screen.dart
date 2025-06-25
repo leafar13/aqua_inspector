@@ -1,5 +1,5 @@
-import 'package:aqua_inspector/custom_button_menu.dart';
-import 'package:aqua_inspector/login_screen.dart';
+import 'package:aqua_inspector/features/dashboard/presentation/widgets/custom_button_menu.dart';
+import 'package:aqua_inspector/features/auth/presentation/pages/login_screen.dart';
 import 'package:flutter/material.dart';
 
 class HomeScreen extends StatelessWidget {
