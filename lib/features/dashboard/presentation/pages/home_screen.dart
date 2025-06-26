@@ -1,6 +1,7 @@
-import 'package:aqua_inspector/custom_button_menu.dart';
-import 'package:aqua_inspector/login_screen.dart';
+import 'package:aqua_inspector/features/auth/presentation/providers/auth_provider.dart';
+import 'package:aqua_inspector/features/dashboard/presentation/widgets/custom_button_menu.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
@@ -9,19 +10,21 @@ class HomeScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('AquaInspector - Inicio'),
+        title: Consumer<AuthProvider>(
+          builder: (context, authProvider, child) {
+            return Text('Bienvenido ${authProvider.currentUser?.fullName ?? ''}');
+          },
+        ),
         backgroundColor: Colors.blue,
         actions: [
-          IconButton(
-            onPressed: () {
-              // Navegar de vuelta al login
-              Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => const LoginScreen()));
+          Consumer<AuthProvider>(
+            builder: (context, authProvider, child) {
+              return IconButton(icon: const Icon(Icons.logout), onPressed: () => authProvider.logout());
             },
-            icon: const Icon(Icons.logout),
-            tooltip: 'Cerrar sesión',
           ),
         ],
       ),
+
       body: Container(
         child: Center(
           child: Column(
