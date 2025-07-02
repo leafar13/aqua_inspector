@@ -29,7 +29,16 @@ class _LoginScreenState extends State<LoginScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Aqua Inspector'), backgroundColor: const Color.fromARGB(255, 74, 167, 243)),
+      appBar: AppBar(
+        title: Center(
+          child: Image.asset(
+            'assets/images/texto.png', 
+            width: 220,
+            fit: BoxFit.contain,
+          ),
+        ),
+        backgroundColor: const Color.fromARGB(255, 119, 178, 226),
+      ),
       body: Stack(
         children: [
           // Contenido principal
@@ -37,7 +46,7 @@ class _LoginScreenState extends State<LoginScreen> {
             padding: const EdgeInsets.all(40),
             decoration: const BoxDecoration(
               gradient: LinearGradient(
-                colors: [Color.fromARGB(255, 74, 167, 243), Color.fromARGB(255, 4, 95, 186)],
+                colors: [Color.fromARGB(255, 119, 178, 226), Color.fromARGB(255, 4, 95, 186)],
                 begin: Alignment.topCenter,
                 end: Alignment.bottomCenter,
               ),
@@ -55,6 +64,7 @@ class _LoginScreenState extends State<LoginScreen> {
 
                       // Campo de usuario
                       TextFormField(
+                        keyboardType: TextInputType.name,
                         controller: _usernameController,
                         enabled: !context.watch<AuthProvider>().isLoading, // Deshabilitar durante loading
                         decoration: const InputDecoration(
@@ -154,7 +164,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                           height: 20,
                                           child: CircularProgressIndicator(
                                             strokeWidth: 2,
-                                            valueColor: AlwaysStoppedAnimation<Color>(Color.fromARGB(255, 218, 19, 19)),
+                                            valueColor: AlwaysStoppedAnimation<Color>(Color.fromARGB(255, 255, 255, 255)),
                                           ),
                                         )
                                       : const Icon(Icons.login, color: Colors.white),
@@ -173,15 +183,15 @@ class _LoginScreenState extends State<LoginScreen> {
           ),
 
           //
-          Consumer<AuthProvider>(
-            builder: (context, authProvider, child) {
-              if (!authProvider.isLoading) {
-                return const SizedBox.shrink();
-              } else {
-                return LoadingCard('Verificando Credenciales...');
-              }
-            },
-          ),
+          // Consumer<AuthProvider>(
+          //   builder: (context, authProvider, child) {
+          //     if (!authProvider.isLoading) {
+          //       return const SizedBox.shrink();
+          //     } else {
+          //       return LoadingCard('Verificando Credenciales...');
+          //     }
+          //   },
+          // ),
         ],
       ),
     );

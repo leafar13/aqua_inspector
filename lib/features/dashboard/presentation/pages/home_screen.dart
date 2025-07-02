@@ -17,6 +17,8 @@ class HomeScreen extends StatelessWidget {
         ),
         backgroundColor: Colors.blue,
         actions: [
+          IconButton(icon: const Icon(Icons.settings), onPressed: () {}),
+          SizedBox.shrink(),
           Consumer<AuthProvider>(
             builder: (context, authProvider, child) {
               return IconButton(icon: const Icon(Icons.logout), onPressed: () => authProvider.logout());

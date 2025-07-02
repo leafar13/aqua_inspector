@@ -1,5 +1,7 @@
 import 'package:aqua_inspector/features/auth/presentation/widgets/auth_wrapper.dart';
+import 'package:aqua_inspector/features/splash/presentation/screen/splash_wrapper.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 
 // Core
@@ -8,14 +10,18 @@ import 'package:aqua_inspector/core/di/dependency_injection.dart';
 // Features
 import 'package:aqua_inspector/features/auth/presentation/providers/auth_provider.dart';
 
+var kColorScheme = ColorScheme.fromSeed(seedColor: Colors.blue);
+
 void main() async {
   // Asegura que los widgets estén inicializados antes de usar servicios async
   WidgetsFlutterBinding.ensureInitialized();
 
   // Inicializar todas las dependencias
   await DependencyInjection.init();
-
-  runApp(MyApp());
+  WidgetsFlutterBinding.ensureInitialized();
+  SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]).then((fn) {
+    runApp(MyApp());
+  });
 }
 
 class MyApp extends StatelessWidget {
@@ -31,9 +37,12 @@ class MyApp extends StatelessWidget {
       ],
       child: MaterialApp(
         title: 'AquaInspector',
-        home: const AuthWrapper(),
+        home: SplashWrapper(),
         debugShowCheckedModeBanner: false,
-        theme: ThemeData(primarySwatch: Colors.blue),
+        theme: ThemeData().copyWith(
+          colorScheme: kColorScheme,
+          appBarTheme: const AppBarTheme().copyWith(backgroundColor: kColorScheme.onPrimaryContainer, foregroundColor: kColorScheme.primaryContainer),
+        ),
       ),
     );
   }
