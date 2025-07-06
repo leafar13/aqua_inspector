@@ -136,12 +136,7 @@ class _SplashScreenState extends State<SplashScreen> with TickerProviderStateMix
                           gradient: RadialGradient(
                             center: const Alignment(0.3, -0.5),
                             radius: 1.5,
-                            colors: [
-                              Colors.transparent,
-                              Colors.blue.withAlpha((0.05 * 255).toInt()),
-                              Colors.cyan.withAlpha((0.1 * 255).toInt()),
-                              Colors.transparent,
-                            ],
+                            colors: [Colors.transparent, Colors.blue.withAlpha((0.05 * 255).toInt()), Colors.cyan.withAlpha((0.1 * 255).toInt())],
                           ),
                         ),
                       ),
@@ -183,7 +178,10 @@ class _SplashScreenState extends State<SplashScreen> with TickerProviderStateMix
                   builder: (context, child) {
                     return Opacity(
                       opacity: _logoOpacity.value,
-                      child: Transform.scale(scale: _logoScale.value, child: const AquaInspectorLogo(size: 300)),
+                      child: Transform.scale(
+                        scale: _logoScale.value,
+                        child: Hero(tag: 'logo', child: const AquaInspectorLogo(size: 300)),
+                      ),
                     );
                   },
                 ),
@@ -218,12 +216,12 @@ class _SplashScreenState extends State<SplashScreen> with TickerProviderStateMix
                   return Positioned(
                     top: currentTop,
                     left: currentLeft,
-                    child: Opacity(
-                      opacity: _textOpacity.value,
-                      child: Transform.scale(
-                        scale: _textScale.value,
-                        child: SizedBox(
-                          width: imageWidth, // Tamaño inicial consistente
+                    child: Transform.scale(
+                      scale: _textScale.value,
+                      child: SizedBox(
+                        width: imageWidth, // Tamaño inicial consistente
+                        child: Hero(
+                          tag: 'logoText',
                           child: Image.asset('assets/images/texto.png', fit: BoxFit.contain),
                         ),
                       ),

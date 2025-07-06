@@ -8,19 +8,13 @@ class SplashWrapper extends StatefulWidget {
 }
 
 class _SplashWrapperState extends State<SplashWrapper> {
-  bool _showLogin = false;
-
   @override
   Widget build(BuildContext context) {
-    if (_showLogin) {
-      return AuthWrapper(); // Tu pantalla de login actual
-    }
-
     return SplashScreen(
       onAnimationComplete: () {
-        setState(() {
-          _showLogin = true;
-        });
+        Navigator.of(
+          context,
+        ).pushReplacement(PageRouteBuilder(pageBuilder: (_, __, ___) => const AuthWrapper(), transitionDuration: const Duration(milliseconds: 1000)));
       },
     );
   }

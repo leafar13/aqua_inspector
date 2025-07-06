@@ -1,146 +1,131 @@
 import 'package:flutter/foundation.dart';
 import 'package:aqua_inspector/features/auth/domain/entities/user.dart';
-import 'package:aqua_inspector/features/auth/domain/usecases/login_usecase.dart';
-import 'package:aqua_inspector/features/auth/domain/repositories/auth_repository.dart';
+import 'package:aqua_inspector/core/di/providers.dart'; // Tu archivo de providers
+import 'package:riverpod_annotation/riverpod_annotation.dart';
+
+// IMPORTANTE: Esta línea es obligatoria
+part 'auth_provider.g.dart';
 
 enum AuthStatus { initial, loading, authenticated, unauthenticated, error }
 
-class AuthProvider extends ChangeNotifier {
-  final LoginUseCase loginUseCase;
-  final AuthRepository authRepository;
+// Estado inmutable
+class AuthState {
+  final AuthStatus status;
+  final User? currentUser;
+  final String? errorMessage;
+  final bool isLoading;
 
-  AuthProvider({required this.loginUseCase, required this.authRepository}) {
-    _checkAuthStatus();
+  const AuthState({this.status = AuthStatus.initial, this.currentUser, this.errorMessage, this.isLoading = false});
+
+  AuthState copyWith({AuthStatus? status, User? currentUser, String? errorMessage, bool? isLoading}) {
+    return AuthState(
+      status: status ?? this.status,
+      currentUser: currentUser ?? this.currentUser,
+      errorMessage: errorMessage,
+      isLoading: isLoading ?? this.isLoading,
+    );
   }
 
-  // Estado privado
-  AuthStatus _status = AuthStatus.initial;
-  User? _currentUser;
-  String? _errorMessage;
-  bool _isLoading = false;
+  bool get isAuthenticated => status == AuthStatus.authenticated;
+}
 
-  // Getters públicos para acceder al estado
-  AuthStatus get status => _status;
-  User? get currentUser => _currentUser;
-  String? get errorMessage => _errorMessage;
-  bool get isLoading => _isLoading;
-  bool get isAuthenticated => _status == AuthStatus.authenticated;
+// Provider principal con anotación @riverpod
+@riverpod
+class AuthNotifier extends _$AuthNotifier {
+  @override
+  AuthState build() {
+    // Estado inicial
+    _checkAuthStatus();
+    return const AuthState();
+  }
 
   // Método para hacer login
   Future<void> login({required String username, required String password}) async {
-    _setLoading(true);
-    _clearError();
+    state = state.copyWith(isLoading: true, status: AuthStatus.loading, errorMessage: null);
 
     try {
-      // Ejecutar el caso de uso de login
+      // Usar los providers en lugar de DependencyInjection
+      final loginUseCase = await ref.read(loginUseCaseProvider.future);
       final result = await loginUseCase.execute(username: username, password: password);
 
       if (result.isSuccess) {
-        _currentUser = result.user;
-        _status = AuthStatus.authenticated;
-        _setLoading(false);
+        state = state.copyWith(currentUser: result.user, status: AuthStatus.authenticated, isLoading: false);
 
         if (kDebugMode) {
-          print('Login exitoso: ${_currentUser?.username}');
+          print('Login exitoso: ${result.user?.username}');
         }
       } else {
-        _status = AuthStatus.error;
-        _errorMessage = result.error;
-        _setLoading(false);
+        state = state.copyWith(status: AuthStatus.error, errorMessage: result.error, isLoading: false);
 
         if (kDebugMode) {
           print('Error en login: ${result.error}');
         }
       }
     } catch (e) {
-      _status = AuthStatus.error;
-      _errorMessage = 'Error inesperado: ${e.toString()}';
-      _setLoading(false);
+      state = state.copyWith(status: AuthStatus.error, errorMessage: 'Error inesperado: ${e.toString()}', isLoading: false);
 
       if (kDebugMode) {
         print('Excepción en login: ${e.toString()}');
       }
     }
-
-    notifyListeners();
   }
 
   // Método para hacer logout
   Future<void> logout() async {
     try {
+      final authRepository = await ref.read(authRepositoryProvider.future);
       await authRepository.logout();
-      _currentUser = null;
-      _status = AuthStatus.unauthenticated;
-      _clearError();
+
+      state = state.copyWith(currentUser: null, status: AuthStatus.unauthenticated, errorMessage: null);
 
       if (kDebugMode) {
         print('Logout exitoso');
       }
     } catch (e) {
-      _status = AuthStatus.error;
-      _errorMessage = 'Error al cerrar sesión: ${e.toString()}';
+      state = state.copyWith(status: AuthStatus.error, errorMessage: 'Error al cerrar sesión: ${e.toString()}');
 
       if (kDebugMode) {
         print('Error en logout: ${e.toString()}');
       }
     }
-
-    notifyListeners();
   }
 
   // Verificar estado de autenticación al inicializar
   Future<void> _checkAuthStatus() async {
     try {
+      final authRepository = await ref.read(authRepositoryProvider.future);
       final isLoggedIn = await authRepository.isLoggedIn();
 
       if (isLoggedIn) {
-        _currentUser = await authRepository.getCurrentUser();
-        _status = AuthStatus.authenticated;
+        final user = await authRepository.getCurrentUser();
+        state = state.copyWith(currentUser: user, status: AuthStatus.authenticated);
 
         if (kDebugMode) {
-          print('Usuario ya autenticado: ${_currentUser?.username}');
+          print('Usuario ya autenticado: ${user?.username}');
         }
       } else {
-        _status = AuthStatus.unauthenticated;
+        state = state.copyWith(status: AuthStatus.unauthenticated);
 
         if (kDebugMode) {
           print('Usuario no autenticado');
         }
       }
     } catch (e) {
-      _status = AuthStatus.unauthenticated;
+      state = state.copyWith(status: AuthStatus.unauthenticated);
 
       if (kDebugMode) {
         print('Error verificando estado de auth: ${e.toString()}');
       }
     }
-
-    notifyListeners();
   }
 
   // Método para limpiar errores
   void clearError() {
-    _clearError();
-    notifyListeners();
+    state = state.copyWith(errorMessage: null, status: state.currentUser != null ? AuthStatus.authenticated : AuthStatus.unauthenticated);
   }
 
   // Método para refrescar el estado de autenticación
   Future<void> refreshAuthStatus() async {
     await _checkAuthStatus();
-  }
-
-  // Métodos privados helpers
-  void _setLoading(bool loading) {
-    _isLoading = loading;
-    if (loading) {
-      _status = AuthStatus.loading;
-    }
-  }
-
-  void _clearError() {
-    _errorMessage = null;
-    if (_status == AuthStatus.error) {
-      _status = _currentUser != null ? AuthStatus.authenticated : AuthStatus.unauthenticated;
-    }
   }
 }

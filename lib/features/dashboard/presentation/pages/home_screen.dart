@@ -1,27 +1,33 @@
-import 'package:aqua_inspector/features/auth/presentation/providers/auth_provider.dart';
 import 'package:aqua_inspector/features/dashboard/presentation/widgets/custom_button_menu.dart';
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:aqua_inspector/features/auth/presentation/providers/auth_provider.dart';
 
-class HomeScreen extends StatelessWidget {
+class HomeScreen extends ConsumerStatefulWidget {
   const HomeScreen({super.key});
 
+  @override
+  ConsumerState<HomeScreen> createState() => _HomeScreenState();
+}
+
+class _HomeScreenState extends ConsumerState<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Consumer<AuthProvider>(
-          builder: (context, authProvider, child) {
-            return Text('Bienvenido ${authProvider.currentUser?.fullName ?? ''}');
+        title: Consumer(
+          builder: (context, ref, child) {
+            final authState = ref.watch(authNotifierProvider);
+            return Text('Bienvenido ${authState.currentUser?.fullName ?? ''}');
           },
         ),
         backgroundColor: Colors.blue,
         actions: [
           IconButton(icon: const Icon(Icons.settings), onPressed: () {}),
           SizedBox.shrink(),
-          Consumer<AuthProvider>(
+          Consumer(
             builder: (context, authProvider, child) {
-              return IconButton(icon: const Icon(Icons.logout), onPressed: () => authProvider.logout());
+              return IconButton(icon: const Icon(Icons.logout), onPressed: () => ref.read(authNotifierProvider.notifier).logout());
             },
           ),
         ],
