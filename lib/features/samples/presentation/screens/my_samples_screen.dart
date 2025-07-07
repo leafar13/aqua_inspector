@@ -1,10 +1,10 @@
-import 'package:aqua_inspector/core/config/providers/config_providers.dart';
+import 'package:aqua_inspector/core/providers/config_providers.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:aqua_inspector/features/samples/presentation/viewmodels/samples_viewmodel.dart';
 import 'package:aqua_inspector/features/samples/presentation/widgets/sample_item_card.dart';
 import 'package:aqua_inspector/features/auth/presentation/providers/auth_provider.dart';
-import 'package:aqua_inspector/core/config/theme/app_theme.dart';
+import 'package:aqua_inspector/core/theme/app_theme.dart';
 
 class MySamplesScreen extends ConsumerStatefulWidget {
   const MySamplesScreen({super.key});
@@ -27,10 +27,7 @@ class _MySamplesScreenState extends ConsumerState<MySamplesScreen> {
     if (authState.currentUser != null) {
       final today = DateTime.now();
       print('Loading samples for userId: ${authState.currentUser!.id}');
-      ref.read(samplesNotifierProvider.notifier).loadSamples(
-        authState.currentUser!.id,
-        today,
-      );
+      ref.read(samplesNotifierProvider.notifier).loadSamples(authState.currentUser!.id, today);
     }
   }
 
@@ -44,18 +41,12 @@ class _MySamplesScreenState extends ConsumerState<MySamplesScreen> {
     return Scaffold(
       backgroundColor: Colors.grey[200],
       appBar: AppBar(
-        title:  Text(
+        title: Text(
           'Muestras de Agua',
           style: TextStyle(color: theme.appBarTheme.foregroundColor, fontWeight: FontWeight.bold),
         ),
         iconTheme: const IconThemeData(color: Colors.white),
-        actions: [
-          IconButton(
-            onPressed: _loadSamples,
-            icon: const Icon(Icons.refresh),
-            tooltip: 'Actualizar',
-          ),
-        ],
+        actions: [IconButton(onPressed: _loadSamples, icon: const Icon(Icons.refresh), tooltip: 'Actualizar')],
       ),
       body: Container(
         decoration: BoxDecoration(gradient: AppTheme.getBackgroundGradient(isDarkMode)),
@@ -70,10 +61,7 @@ class _MySamplesScreenState extends ConsumerState<MySamplesScreen> {
   Widget _buildBody(SamplesState samplesState, AuthState authState) {
     if (authState.currentUser == null) {
       return const Center(
-        child: Text(
-          'Usuario no autenticado',
-          style: TextStyle(fontSize: 16, color: Colors.grey),
-        ),
+        child: Text('Usuario no autenticado', style: TextStyle(fontSize: 16, color: Colors.grey)),
       );
     }
 
@@ -84,10 +72,7 @@ class _MySamplesScreenState extends ConsumerState<MySamplesScreen> {
           children: [
             CircularProgressIndicator(),
             SizedBox(height: 16),
-            Text(
-              'Cargando muestras...',
-              style: TextStyle(fontSize: 16, color: Colors.grey),
-            ),
+            Text('Cargando muestras...', style: TextStyle(fontSize: 16, color: Colors.grey)),
           ],
         ),
       );
@@ -98,19 +83,11 @@ class _MySamplesScreenState extends ConsumerState<MySamplesScreen> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            const Icon(
-              Icons.error_outline,
-              size: 64,
-              color: Colors.red,
-            ),
+            const Icon(Icons.error_outline, size: 64, color: Colors.red),
             const SizedBox(height: 16),
             Text(
               'Error al cargar las muestras',
-              style: TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.bold,
-                color: Colors.grey[800],
-              ),
+              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.grey[800]),
             ),
             const SizedBox(height: 8),
             Text(
@@ -123,10 +100,7 @@ class _MySamplesScreenState extends ConsumerState<MySamplesScreen> {
               onPressed: _loadSamples,
               icon: const Icon(Icons.refresh),
               label: const Text('Reintentar'),
-              style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.blue,
-                foregroundColor: Colors.white,
-              ),
+              style: ElevatedButton.styleFrom(backgroundColor: Colors.blue, foregroundColor: Colors.white),
             ),
           ],
         ),
@@ -138,19 +112,11 @@ class _MySamplesScreenState extends ConsumerState<MySamplesScreen> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(
-              Icons.science_outlined,
-              size: 64,
-              color: Colors.grey[400],
-            ),
+            Icon(Icons.science_outlined, size: 64, color: Colors.grey[400]),
             const SizedBox(height: 16),
             Text(
               'No hay muestras para mostrar',
-              style: TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.bold,
-                color: Colors.grey[800],
-              ),
+              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.grey[800]),
             ),
             const SizedBox(height: 8),
             Text(
@@ -163,10 +129,7 @@ class _MySamplesScreenState extends ConsumerState<MySamplesScreen> {
               onPressed: _loadSamples,
               icon: const Icon(Icons.refresh),
               label: const Text('Actualizar'),
-              style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.blue,
-                foregroundColor: Colors.white,
-              ),
+              style: ElevatedButton.styleFrom(backgroundColor: Colors.blue, foregroundColor: Colors.white),
             ),
           ],
         ),

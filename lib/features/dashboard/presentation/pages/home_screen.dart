@@ -1,5 +1,5 @@
-import 'package:aqua_inspector/core/config/providers/config_providers.dart';
-import 'package:aqua_inspector/core/config/theme/app_theme.dart';
+import 'package:aqua_inspector/core/providers/config_providers.dart';
+import 'package:aqua_inspector/core/theme/app_theme.dart';
 import 'package:aqua_inspector/features/dashboard/presentation/widgets/custom_button_menu.dart';
 import 'package:aqua_inspector/features/samples/presentation/screens/my_samples_screen.dart';
 import 'package:flutter/material.dart';
@@ -57,14 +57,15 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
             mainAxisSize: MainAxisSize.max,
             children: [
               // Logo
-                    Hero(
-                      tag: 'logo',
-                      transitionOnUserGestures: true,
-                      child: Image.asset('assets/images/logo.png', width: 150, height: 150, alignment: Alignment.center,),
-                    ), Hero(
-            tag: 'logoText',
-            child: Image.asset('assets/images/texto.png', width: 200, fit: BoxFit.contain),
-          ),
+              Hero(
+                tag: 'logo',
+                transitionOnUserGestures: true,
+                child: Image.asset('assets/images/logo.png', width: 150, height: 150, alignment: Alignment.center),
+              ),
+              Hero(
+                tag: 'logoText',
+                child: Image.asset('assets/images/texto.png', width: 200, fit: BoxFit.contain),
+              ),
               SizedBox(height: 60),
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
@@ -72,15 +73,10 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                   CustomButtonMenu(tittle: 'Tomar muestra', onPressed: () {}, icon: Icons.science_outlined),
                   SizedBox(width: 20),
                   CustomButtonMenu(
-                    tittle: 'Mis muestras', 
+                    tittle: 'Mis muestras',
                     onPressed: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => const MySamplesScreen(),
-                        ),
-                      );
-                    }, 
+                      Navigator.push(context, MaterialPageRoute(builder: (context) => const MySamplesScreen()));
+                    },
                     icon: Icons.science,
                   ),
                 ],

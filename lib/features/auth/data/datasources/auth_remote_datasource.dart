@@ -1,7 +1,7 @@
 import 'package:dio/dio.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:aqua_inspector/features/auth/data/models/login_model.dart';
-import 'package:aqua_inspector/core/config/app_config.dart';
+import 'package:aqua_inspector/core/providers/app_config.dart';
 import 'package:aqua_inspector/core/network/dio_client.dart';
 
 abstract class AuthRemoteDataSource {
@@ -20,27 +20,15 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
   @override
   Future<LoginModel> login({required String username, required String password}) async {
     try {
-      final response = await _dio.post(
-        AppConfig.authLoginEndpoint,
-        data: {
-          'username': username,
-          'password': password,
-        },
-      );
+      final response = await _dio.post(AppConfig.authLoginEndpoint, data: {'username': username, 'password': password});
 
       if (response.statusCode == 200) {
         return LoginModel.fromJson(response.data);
       } else {
-        throw AuthDataSourceException(
-          'Error en login', 
-          statusCode: response.statusCode,
-        );
+        throw AuthDataSourceException('Error en login', statusCode: response.statusCode);
       }
     } on DioException catch (e) {
-      throw AuthDataSourceException(
-        'Error de conexión', 
-        statusCode: e.response?.statusCode,
-      );
+      throw AuthDataSourceException('Error de conexión', statusCode: e.response?.statusCode);
     } catch (e) {
       throw AuthDataSourceException('Error inesperado: ${e.toString()}');
     }
