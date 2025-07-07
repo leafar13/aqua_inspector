@@ -8,7 +8,7 @@ import 'package:http/http.dart' as http;
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-part 'providers.g.dart';
+part 'config_providers.g.dart';
 
 @riverpod
 Future<SharedPreferences> sharedPreferences(Ref ref) async {
@@ -82,5 +82,17 @@ Future<bool> appInitialization(Ref ref) async {
   } catch (e) {
     print('Error inicializando app: $e');
     rethrow;
+  }
+}
+
+@riverpod
+class DarkMode extends _$DarkMode {
+  @override
+  bool build() {
+    return false;
+  }
+
+  void toggle() {
+    state = !state;
   }
 }

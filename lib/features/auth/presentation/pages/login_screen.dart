@@ -1,3 +1,4 @@
+import 'package:aqua_inspector/core/config/theme/app_theme.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:aqua_inspector/features/auth/presentation/providers/auth_provider.dart';
@@ -27,6 +28,9 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final isDarkMode = theme.brightness == Brightness.dark;
+
     return Scaffold(
       appBar: AppBar(
         title: Center(
@@ -35,20 +39,14 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
             child: Image.asset('assets/images/texto.png', width: 220, fit: BoxFit.contain),
           ),
         ),
-        backgroundColor: const Color.fromARGB(255, 119, 178, 226),
+        //backgroundColor: const Color.fromARGB(255, 119, 178, 226),
       ),
       body: Stack(
         children: [
           // Contenido principal
           Container(
             padding: const EdgeInsets.all(10),
-            decoration: const BoxDecoration(
-              gradient: LinearGradient(
-                colors: [Color.fromARGB(255, 119, 178, 226), Color.fromARGB(255, 4, 95, 186)],
-                begin: Alignment.topCenter,
-                end: Alignment.bottomCenter,
-              ),
-            ),
+            decoration: BoxDecoration(gradient: AppTheme.getBackgroundGradient(isDarkMode)),
             child: Center(
               child: SingleChildScrollView(
                 child: Column(
@@ -78,13 +76,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                                 keyboardType: TextInputType.name,
                                 controller: _usernameController,
                                 enabled: !ref.watch(authNotifierProvider).isLoading, // Deshabilitar durante loading
-                                decoration: const InputDecoration(
-                                  fillColor: Colors.white,
-                                  filled: true,
-                                  prefixIcon: Icon(Icons.person, color: Colors.grey),
-                                  labelText: 'Usuario',
-                                  border: OutlineInputBorder(borderSide: BorderSide(color: Colors.grey)),
-                                ),
+                                decoration: const InputDecoration(fillColor: Colors.white, filled: true, prefixIcon: Icon(Icons.person), labelText: 'Usuario'),
                                 validator: (value) {
                                   if (value == null || value.trim().isEmpty) {
                                     return 'El usuario es requerido';
@@ -93,7 +85,6 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                                 },
                               ),
                               const SizedBox(height: 20),
-
                               // Campo de contraseña
                               TextFormField(
                                 controller: _passwordController,
@@ -102,11 +93,10 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                                 decoration: InputDecoration(
                                   fillColor: Colors.white,
                                   filled: true,
-                                  prefixIcon: const Icon(Icons.lock, color: Colors.grey),
+                                  prefixIcon: const Icon(Icons.lock),
                                   labelText: 'Contraseña',
-                                  border: const OutlineInputBorder(borderSide: BorderSide(color: Colors.grey)),
                                   suffixIcon: IconButton(
-                                    icon: Icon(_obscurePassword ? Icons.visibility : Icons.visibility_off, color: Colors.grey),
+                                    icon: Icon(_obscurePassword ? Icons.visibility : Icons.visibility_off),
                                     onPressed: () {
                                       setState(() {
                                         _obscurePassword = !_obscurePassword;
@@ -126,7 +116,6 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                               ),
 
                               const SizedBox(height: 30),
-
                               // Botón de login con estado del provider
                               Consumer(
                                 builder: (context, ref, child) {
@@ -140,36 +129,30 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                                           padding: const EdgeInsets.all(12),
                                           margin: const EdgeInsets.only(bottom: 20),
                                           decoration: BoxDecoration(
-                                            color: Colors.red.shade100,
-                                            border: Border.all(color: Colors.red),
+                                            color: theme.colorScheme.error.withValues(alpha: 0.1),
+                                            border: Border.all(color: theme.colorScheme.error),
                                             borderRadius: BorderRadius.circular(8),
                                           ),
                                           child: Row(
                                             children: [
-                                              const Icon(Icons.error, color: Colors.red),
+                                              Icon(Icons.error, color: theme.colorScheme.error),
                                               const SizedBox(width: 8),
                                               Expanded(
-                                                child: Text(authState.errorMessage!, style: const TextStyle(color: Colors.red)),
+                                                child: Text(authState.errorMessage!, style: TextStyle(color: theme.colorScheme.error)),
                                               ),
                                               IconButton(
-                                                icon: const Icon(Icons.close, color: Colors.red),
+                                                icon: Icon(Icons.close, color: theme.colorScheme.error),
                                                 onPressed: () => authNotifier.clearError(),
                                               ),
                                             ],
                                           ),
                                         ),
-
                                       // Botón de login
                                       SizedBox(
                                         width: double.infinity,
                                         height: 50,
                                         child: OutlinedButton.icon(
                                           onPressed: authState.isLoading ? null : () => _handleLogin(context),
-                                          style: OutlinedButton.styleFrom(
-                                            foregroundColor: Colors.white,
-                                            backgroundColor: Colors.blue,
-                                            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
-                                          ),
                                           icon: authState.isLoading
                                               ? const SizedBox(
                                                   width: 20,
@@ -197,17 +180,6 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
               ),
             ),
           ),
-
-          //
-          // Consumer<AuthProvider>(
-          //   builder: (context, authProvider, child) {
-          //     if (!authProvider.isLoading) {
-          //       return const SizedBox.shrink();
-          //     } else {
-          //       return LoadingCard('Verificando Credenciales...');
-          //     }
-          //   },
-          // ),
         ],
       ),
     );

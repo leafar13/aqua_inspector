@@ -1,6 +1,6 @@
+import 'package:aqua_inspector/core/config/providers/config_providers.dart';
 import 'package:flutter/foundation.dart';
 import 'package:aqua_inspector/features/auth/domain/entities/user.dart';
-import 'package:aqua_inspector/core/di/providers.dart'; // Tu archivo de providers
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 // IMPORTANTE: Esta línea es obligatoria
