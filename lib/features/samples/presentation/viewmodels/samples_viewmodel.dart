@@ -55,7 +55,7 @@ class SamplesNotifier extends _$SamplesNotifier {
     try {
       final samplesRepository = await ref.read(samplesRepositoryProvider.future);
       final samples = await samplesRepository.getSamplesSummaryByUser(userId, date);
-
+    samples.addAll(getDummySamples()); // Agregar muestras de prueba
       state = state.copyWith(
         samples: samples,
         status: SamplesStatus.loaded,
@@ -92,4 +92,15 @@ class SamplesNotifier extends _$SamplesNotifier {
   void clearSamples() {
     state = const SamplesState();
   }
+ List<SampleItem> getDummySamples() {
+  List<SampleItem> samples = [
+   SampleItem(id: 1, samplingDatetime: DateTime.now(), sampleNumber: '102-20250707-04', waterAssociationName: 'Asada San Carlos', systemName: 'Tanque sureste', isSynced: false),
+   SampleItem(id: 2, samplingDatetime: DateTime.now(), sampleNumber: '102-20250707-05', waterAssociationName: 'Asada San Ramon', systemName: 'Tanque sureste', isSynced: false),
+   SampleItem(id: 3, samplingDatetime: DateTime.now(), sampleNumber: '102-20250707-06', waterAssociationName: 'Asada CHEPE', systemName: 'Tanque sureste', isSynced: false),
+  ];
+
+  return samples;
+ 
+ }
+
 }

@@ -31,7 +31,7 @@ class SamplesRemoteDataSourceImpl implements SamplesRemoteDataSource {
         return data.map((json) {
           // Agregar isSynced = false por defecto ya que no viene del API
           final jsonWithSync = Map<String, dynamic>.from(json);
-          jsonWithSync['isSynced'] = false;
+          jsonWithSync['isSynced'] = true;
           return SampleItemModel.fromJson(jsonWithSync);
         }).toList();
       } else {

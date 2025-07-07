@@ -22,10 +22,10 @@ class AuthState {
 
   const AuthState({this.status = AuthStatus.initial, this.currentUser, this.errorMessage, this.isLoading = false});
 
-  AuthState copyWith({AuthStatus? status, User? currentUser, String? errorMessage, bool? isLoading}) {
+  AuthState copyWith({AuthStatus? status, User? currentUser, String? errorMessage, bool? isLoading, bool clearUser = false}) {
     return AuthState(
       status: status ?? this.status,
-      currentUser: currentUser ?? this.currentUser,
+      currentUser: clearUser ? null : (currentUser ?? this.currentUser),
       errorMessage: errorMessage,
       isLoading: isLoading ?? this.isLoading,
     );
@@ -81,7 +81,7 @@ class AuthNotifier extends _$AuthNotifier {
       final authRepository = await ref.read(authRepositoryProvider.future);
       await authRepository.logout();
 
-      state = state.copyWith(currentUser: null, status: AuthStatus.unauthenticated, errorMessage: null);
+      state = state.copyWith(status: AuthStatus.unauthenticated, errorMessage: null, clearUser: true);
 
       if (kDebugMode) {
         print('Logout exitoso');
