@@ -1,7 +1,12 @@
-import 'package:aqua_inspector/core/config/providers/config_providers.dart';
+import 'package:aqua_inspector/features/auth/data/datasources/auth_remote_datasource.dart';
+import 'package:aqua_inspector/features/auth/data/repositories/auth_repository_impl.dart';
+import 'package:aqua_inspector/features/auth/domain/repositories/auth_repository.dart';
+import 'package:aqua_inspector/features/auth/domain/usecases/login_usecase.dart';
 import 'package:flutter/foundation.dart';
 import 'package:aqua_inspector/features/auth/domain/entities/user.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 // IMPORTANTE: Esta línea es obligatoria
 part 'auth_provider.g.dart';
@@ -128,4 +133,25 @@ class AuthNotifier extends _$AuthNotifier {
   Future<void> refreshAuthStatus() async {
     await _checkAuthStatus();
   }
+  
 }
+
+// Provider para SharedPreferences
+final sharedPreferencesProvider = FutureProvider<SharedPreferences>((ref) async {
+  return await SharedPreferences.getInstance();
+});
+
+// Provider para el repositorio de auth
+final authRepositoryProvider = FutureProvider<AuthRepository>((ref) async {
+  return AuthRepositoryImpl(
+    remoteDataSource: ref.watch(authRemoteDataSourceProvider),
+    sharedPreferences: await ref.watch(sharedPreferencesProvider.future),
+  );
+});
+
+// Provider para el caso de uso de login
+final loginUseCaseProvider = FutureProvider<LoginUseCase>((ref) async {
+  return LoginUseCase(authRepository: await ref.watch(authRepositoryProvider.future));
+});
+
+

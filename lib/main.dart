@@ -1,3 +1,4 @@
+import 'package:aqua_inspector/core/config/app_config.dart';
 import 'package:aqua_inspector/core/config/providers/config_providers.dart';
 import 'package:aqua_inspector/core/config/theme/app_theme.dart';
 import 'package:aqua_inspector/features/splash/presentation/screen/splash_wrapper.dart';
@@ -13,8 +14,10 @@ var kColorScheme = ColorScheme.fromSeed(seedColor: Colors.blue);
 
 void main() async {
   // Asegura que los widgets estén inicializados antes de usar servicios async
-
   WidgetsFlutterBinding.ensureInitialized();
+  
+ 
+  
   SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]).then((fn) {
     runApp(ProviderScope(child: MyApp()));
   });
@@ -25,6 +28,8 @@ class MyApp extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    
+    ref.read(appInitializationProvider);
     final isDarkMode = ref.watch(darkModeProvider);
     return MaterialApp(
       title: 'AquaInspector',

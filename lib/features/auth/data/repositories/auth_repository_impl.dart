@@ -2,6 +2,7 @@ import 'package:aqua_inspector/features/auth/data/datasources/auth_remote_dataso
 import 'package:aqua_inspector/features/auth/domain/entities/user.dart';
 import 'package:aqua_inspector/features/auth/domain/repositories/auth_repository.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:aqua_inspector/core/network/errors/network_errors.dart';
 
 class AuthRepositoryImpl implements AuthRepository {
   final AuthRemoteDataSource remoteDataSource;
@@ -44,7 +45,10 @@ class AuthRepositoryImpl implements AuthRepository {
 
       return AuthResult.success(user: user, token: loginModel.token, tokenType: loginModel.tokenType, expiresIn: loginModel.expiresIn);
     } on AuthDataSourceException catch (e) {
-      return AuthResult.failure(e.message);
+      // Convertir statusCode a mensaje amigable
+      int errorCode = e.statusCode ?? 500;
+     String userMessage = NetworkErrors.fromHttpCode(errorCode).message;
+      return AuthResult.failure(userMessage);
     } catch (e) {
       return AuthResult.failure('Error inesperado: ${e.toString()}');
     }
