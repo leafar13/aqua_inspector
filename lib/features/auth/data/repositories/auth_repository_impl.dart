@@ -1,8 +1,11 @@
-import 'package:aqua_inspector/features/auth/data/datasources/auth_remote_datasource.dart';
-import 'package:aqua_inspector/features/auth/domain/entities/user.dart';
-import 'package:aqua_inspector/features/auth/domain/repositories/auth_repository.dart';
+import 'dart:convert';
+
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:aqua_inspector/core/network/errors/network_errors.dart';
+
+import '../../../../core/network/errors/network_errors.dart';
+import '../../domain/entities/user.dart';
+import '../../domain/repositories/auth_repository.dart';
+import '../datasources/auth_remote_datasource.dart';
 
 class AuthRepositoryImpl implements AuthRepository {
   final AuthRemoteDataSource remoteDataSource;
@@ -11,14 +14,7 @@ class AuthRepositoryImpl implements AuthRepository {
   // Keys para SharedPreferences
   static const String _tokenKey = 'auth_token';
   static const String _tokenTypeKey = 'auth_token_type';
-  static const String _userIdKey = 'user_id';
-  static const String _usernameKey = 'username';
-  static const String _fullNameKey = 'full_name';
-  static const String _emailKey = 'email';
-  static const String _organizationIdKey = 'organization_id';
-  static const String _organizationNameKey = 'organization_name';
-  static const String _roleIdKey = 'role_id';
-  static const String _roleNameKey = 'role_name';
+  static const String _user = 'user';
 
   AuthRepositoryImpl({required this.remoteDataSource, required this.sharedPreferences});
 
@@ -47,7 +43,7 @@ class AuthRepositoryImpl implements AuthRepository {
     } on AuthDataSourceException catch (e) {
       // Convertir statusCode a mensaje amigable
       int errorCode = e.statusCode ?? 500;
-     String userMessage = NetworkErrors.fromHttpCode(errorCode).message;
+      String userMessage = NetworkErrors.fromHttpCode(errorCode).message;
       return AuthResult.failure(userMessage);
     } catch (e) {
       return AuthResult.failure('Error inesperado: ${e.toString()}');
@@ -59,31 +55,17 @@ class AuthRepositoryImpl implements AuthRepository {
     // Limpiar todos los datos guardados
     await sharedPreferences.remove(_tokenKey);
     await sharedPreferences.remove(_tokenTypeKey);
-    await sharedPreferences.remove(_userIdKey);
-    await sharedPreferences.remove(_usernameKey);
-    await sharedPreferences.remove(_fullNameKey);
-    await sharedPreferences.remove(_emailKey);
-    await sharedPreferences.remove(_organizationIdKey);
-    await sharedPreferences.remove(_organizationNameKey);
-    await sharedPreferences.remove(_roleIdKey);
-    await sharedPreferences.remove(_roleNameKey);
+    await sharedPreferences.remove(_user);
   }
 
   @override
   Future<User?> getCurrentUser() async {
-    final userId = sharedPreferences.getInt(_userIdKey);
-    if (userId == null) return null;
-
-    return User(
-      id: userId,
-      username: sharedPreferences.getString(_usernameKey) ?? '',
-      fullName: sharedPreferences.getString(_fullNameKey) ?? '',
-      email: sharedPreferences.getString(_emailKey) ?? '',
-      organizationId: sharedPreferences.getInt(_organizationIdKey) ?? 0,
-      organizationName: sharedPreferences.getString(_organizationNameKey) ?? '',
-      roleId: sharedPreferences.getInt(_roleIdKey) ?? 0,
-      roleName: sharedPreferences.getString(_roleNameKey) ?? '',
-    );
+    final user = sharedPreferences.getString(_user);
+    if (user == null) {
+      return null;
+    } else {
+      return User.fromJson(json.decode(user));
+    }
   }
 
   @override
@@ -96,13 +78,6 @@ class AuthRepositoryImpl implements AuthRepository {
   Future<void> _saveUserData(dynamic loginModel, User user) async {
     await sharedPreferences.setString(_tokenKey, loginModel.token);
     await sharedPreferences.setString(_tokenTypeKey, loginModel.tokenType);
-    await sharedPreferences.setInt(_userIdKey, user.id);
-    await sharedPreferences.setString(_usernameKey, user.username);
-    await sharedPreferences.setString(_fullNameKey, user.fullName);
-    await sharedPreferences.setString(_emailKey, user.email);
-    await sharedPreferences.setInt(_organizationIdKey, user.organizationId);
-    await sharedPreferences.setString(_organizationNameKey, user.organizationName);
-    await sharedPreferences.setInt(_roleIdKey, user.roleId);
-    await sharedPreferences.setString(_roleNameKey, user.roleName);
+    await sharedPreferences.setString(_user, json.encode(user.toJson()));
   }
 }

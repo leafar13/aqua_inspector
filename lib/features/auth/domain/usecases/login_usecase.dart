@@ -1,4 +1,4 @@
-import 'package:aqua_inspector/features/auth/domain/repositories/auth_repository.dart';
+import '../repositories/auth_repository.dart';
 
 class LoginUseCase {
   final AuthRepository authRepository;

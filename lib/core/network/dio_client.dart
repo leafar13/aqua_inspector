@@ -1,9 +1,14 @@
 import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:aqua_inspector/core/providers/app_config.dart';
+import 'package:riverpod_annotation/riverpod_annotation.dart';
 
-final dioClientProvider = Provider<Dio>((ref) {
+import '../providers/app_config.dart';
+
+part 'dio_client.g.dart';
+
+@riverpod
+Dio dioClient(Ref ref) {
   final dio = Dio(
     BaseOptions(
       baseUrl: AppConfig.apiBaseUrl,
@@ -21,4 +26,4 @@ final dioClientProvider = Provider<Dio>((ref) {
   }
 
   return dio;
-});
+}

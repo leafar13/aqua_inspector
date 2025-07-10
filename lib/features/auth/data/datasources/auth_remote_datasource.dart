@@ -1,8 +1,9 @@
 import 'package:dio/dio.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:aqua_inspector/features/auth/data/models/login_model.dart';
-import 'package:aqua_inspector/core/providers/app_config.dart';
-import 'package:aqua_inspector/core/network/dio_client.dart';
+
+import '../../../../core/network/dio_client.dart';
+import '../../../../core/providers/app_config.dart';
+import '../models/login_model.dart';
 
 abstract class AuthRemoteDataSource {
   Future<LoginModel> login({required String username, required String password});

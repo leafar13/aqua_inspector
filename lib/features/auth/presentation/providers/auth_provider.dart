@@ -1,42 +1,22 @@
-import 'package:aqua_inspector/features/auth/data/datasources/auth_remote_datasource.dart';
-import 'package:aqua_inspector/features/auth/data/repositories/auth_repository_impl.dart';
-import 'package:aqua_inspector/features/auth/domain/repositories/auth_repository.dart';
-import 'package:aqua_inspector/features/auth/domain/usecases/login_usecase.dart';
 import 'package:flutter/foundation.dart';
-import 'package:aqua_inspector/features/auth/domain/entities/user.dart';
-import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+
+import '../../data/datasources/auth_remote_datasource.dart';
+import '../../data/models/auth_state.dart';
+import '../../data/repositories/auth_repository_impl.dart';
+import '../../domain/repositories/auth_repository.dart';
+import '../../domain/usecases/login_usecase.dart';
 
 // IMPORTANTE: Esta línea es obligatoria
 part 'auth_provider.g.dart';
 
 enum AuthStatus { initial, loading, authenticated, unauthenticated, error }
 
-// Estado inmutable
-class AuthState {
-  final AuthStatus status;
-  final User? currentUser;
-  final String? errorMessage;
-  final bool isLoading;
-
-  const AuthState({this.status = AuthStatus.initial, this.currentUser, this.errorMessage, this.isLoading = false});
-
-  AuthState copyWith({AuthStatus? status, User? currentUser, String? errorMessage, bool? isLoading, bool clearUser = false}) {
-    return AuthState(
-      status: status ?? this.status,
-      currentUser: clearUser ? null : (currentUser ?? this.currentUser),
-      errorMessage: errorMessage,
-      isLoading: isLoading ?? this.isLoading,
-    );
-  }
-
-  bool get isAuthenticated => status == AuthStatus.authenticated;
-}
-
 // Provider principal con anotación @riverpod
 @riverpod
-class AuthNotifier extends _$AuthNotifier {
+class AuthStatusNotifier extends _$AuthStatusNotifier {
   @override
   AuthState build() {
     // Estado inicial
@@ -55,23 +35,11 @@ class AuthNotifier extends _$AuthNotifier {
 
       if (result.isSuccess) {
         state = state.copyWith(currentUser: result.user, status: AuthStatus.authenticated, isLoading: false);
-
-        if (kDebugMode) {
-          print('Login exitoso: ${result.user?.username}');
-        }
       } else {
         state = state.copyWith(status: AuthStatus.error, errorMessage: result.error, isLoading: false);
-
-        if (kDebugMode) {
-          print('Error en login: ${result.error}');
-        }
       }
     } catch (e) {
       state = state.copyWith(status: AuthStatus.error, errorMessage: 'Error inesperado: ${e.toString()}', isLoading: false);
-
-      if (kDebugMode) {
-        print('Excepción en login: ${e.toString()}');
-      }
     }
   }
 
@@ -81,17 +49,9 @@ class AuthNotifier extends _$AuthNotifier {
       final authRepository = await ref.read(authRepositoryProvider.future);
       await authRepository.logout();
 
-      state = state.copyWith(status: AuthStatus.unauthenticated, errorMessage: null, clearUser: true);
-
-      if (kDebugMode) {
-        print('Logout exitoso');
-      }
+      state = state.customCopyWith(status: AuthStatus.unauthenticated, errorMessage: null, clearUser: true);
     } catch (e) {
       state = state.copyWith(status: AuthStatus.error, errorMessage: 'Error al cerrar sesión: ${e.toString()}');
-
-      if (kDebugMode) {
-        print('Error en logout: ${e.toString()}');
-      }
     }
   }
 
@@ -104,23 +64,13 @@ class AuthNotifier extends _$AuthNotifier {
       if (isLoggedIn) {
         final user = await authRepository.getCurrentUser();
         state = state.copyWith(currentUser: user, status: AuthStatus.authenticated);
-
-        if (kDebugMode) {
-          print('Usuario ya autenticado: ${user?.username}');
-        }
       } else {
         state = state.copyWith(status: AuthStatus.unauthenticated);
 
-        if (kDebugMode) {
-          print('Usuario no autenticado');
-        }
+        if (kDebugMode) {}
       }
     } catch (e) {
       state = state.copyWith(status: AuthStatus.unauthenticated);
-
-      if (kDebugMode) {
-        print('Error verificando estado de auth: ${e.toString()}');
-      }
     }
   }
 
@@ -133,25 +83,19 @@ class AuthNotifier extends _$AuthNotifier {
   Future<void> refreshAuthStatus() async {
     await _checkAuthStatus();
   }
-  
 }
 
-// Provider para SharedPreferences
-final sharedPreferencesProvider = FutureProvider<SharedPreferences>((ref) async {
+@riverpod
+Future<SharedPreferences> sharedPreferences(Ref ref) async {
   return await SharedPreferences.getInstance();
-});
+}
 
-// Provider para el repositorio de auth
-final authRepositoryProvider = FutureProvider<AuthRepository>((ref) async {
-  return AuthRepositoryImpl(
-    remoteDataSource: ref.watch(authRemoteDataSourceProvider),
-    sharedPreferences: await ref.watch(sharedPreferencesProvider.future),
-  );
-});
+@riverpod
+Future<AuthRepository> authRepository(Ref ref) async {
+  return AuthRepositoryImpl(remoteDataSource: ref.watch(authRemoteDataSourceProvider), sharedPreferences: await ref.watch(sharedPreferencesProvider.future));
+}
 
-// Provider para el caso de uso de login
-final loginUseCaseProvider = FutureProvider<LoginUseCase>((ref) async {
+@riverpod
+Future<LoginUseCase> loginUseCase(Ref ref) async {
   return LoginUseCase(authRepository: await ref.watch(authRepositoryProvider.future));
-});
-
-
+}

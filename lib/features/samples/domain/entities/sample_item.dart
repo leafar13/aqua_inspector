@@ -1,45 +1,19 @@
 // Entidad de dominio para items de lista de muestras
-class SampleItem {
-  final int id;
-  final DateTime samplingDatetime;
-  final String sampleNumber;
-  final String waterAssociationName;
-  final String systemName;
-  final bool isSynced;
+import 'package:freezed_annotation/freezed_annotation.dart';
 
-  const SampleItem({
-    required this.id,
-    required this.samplingDatetime,
-    required this.sampleNumber,
-    required this.waterAssociationName,
-    required this.systemName,
-    required this.isSynced,
-  });
+part 'sample_item.freezed.dart';
+part 'sample_item.g.dart';
 
-  @override
-  bool operator ==(Object other) {
-    if (identical(this, other)) return true;
-    return other is SampleItem &&
-        other.id == id &&
-        other.samplingDatetime == samplingDatetime &&
-        other.sampleNumber == sampleNumber &&
-        other.waterAssociationName == waterAssociationName &&
-        other.systemName == systemName &&
-        other.isSynced == isSynced;
-  }
+@freezed
+abstract class SampleItem with _$SampleItem {
+  const factory SampleItem({
+    required int id,
+    required DateTime samplingDatetime,
+    required String sampleNumber,
+    required String waterAssociationName,
+    required String systemName,
+    @Default(false) bool isSynced,
+  }) = _SampleItem;
 
-  @override
-  int get hashCode {
-    return id.hashCode ^
-        samplingDatetime.hashCode ^
-        sampleNumber.hashCode ^
-        waterAssociationName.hashCode ^
-        systemName.hashCode ^
-        isSynced.hashCode;
-  }
-
-  @override
-  String toString() {
-    return 'SampleItem(id: $id, samplingDatetime: $samplingDatetime, sampleNumber: $sampleNumber, waterAssociationName: $waterAssociationName, systemName: $systemName, isSynced: $isSynced)';
-  }
+  factory SampleItem.fromJson(Map<String, dynamic> json) => _$SampleItemFromJson(json);
 }

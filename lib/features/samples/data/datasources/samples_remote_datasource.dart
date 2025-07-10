@@ -1,10 +1,8 @@
+import 'package:aqua_inspector/features/samples/domain/entities/samples_remote_data_source.dart';
 import 'package:dio/dio.dart';
-import 'package:aqua_inspector/features/samples/data/models/sample_item_model.dart';
 import 'package:intl/intl.dart';
 
-abstract class SamplesRemoteDataSource {
-  Future<List<SampleItemModel>> getSamplesSummaryByUser(int userId, DateTime date);
-}
+import '../models/sample_item_model.dart';
 
 class SamplesRemoteDataSourceImpl implements SamplesRemoteDataSource {
   final Dio dio;
@@ -18,13 +16,7 @@ class SamplesRemoteDataSourceImpl implements SamplesRemoteDataSource {
       final formatter = DateFormat('dd/MM/yyyy');
       final dateString = formatter.format(date);
 
-      final response = await dio.get(
-        '/samples/summary/user/$userId',
-        queryParameters: {
-          'startDate': dateString,
-          'endDate': dateString,
-        },
-      );
+      final response = await dio.get('/samples/summary/user/$userId', queryParameters: {'startDate': dateString, 'endDate': dateString});
 
       if (response.statusCode == 200) {
         final List<dynamic> data = response.data as List<dynamic>;
@@ -35,16 +27,10 @@ class SamplesRemoteDataSourceImpl implements SamplesRemoteDataSource {
           return SampleItemModel.fromJson(jsonWithSync);
         }).toList();
       } else {
-        throw SamplesDataSourceException(
-          'Error al obtener muestras: ${response.statusMessage}',
-          statusCode: response.statusCode,
-        );
+        throw SamplesDataSourceException('Error al obtener muestras: ${response.statusMessage}', statusCode: response.statusCode);
       }
     } on DioException catch (e) {
-      throw SamplesDataSourceException(
-        _getErrorMessage(e),
-        statusCode: e.response?.statusCode,
-      );
+      throw SamplesDataSourceException(_getErrorMessage(e), statusCode: e.response?.statusCode);
     } catch (e) {
       throw SamplesDataSourceException('Error inesperado: ${e.toString()}');
     }

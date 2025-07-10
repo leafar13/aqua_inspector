@@ -1,6 +1,6 @@
 import 'dart:convert';
 
-import 'package:aqua_inspector/features/auth/data/models/user_info.dart';
+import 'user_info.dart';
 
 LoginModel loginModelFromJson(String str) => LoginModel.fromJson(json.decode(str));
 

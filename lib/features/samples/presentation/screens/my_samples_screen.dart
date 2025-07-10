@@ -1,10 +1,13 @@
-import 'package:aqua_inspector/core/providers/config_providers.dart';
+import 'package:aqua_inspector/features/auth/data/models/auth_state.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:aqua_inspector/features/samples/presentation/viewmodels/samples_viewmodel.dart';
-import 'package:aqua_inspector/features/samples/presentation/widgets/sample_item_card.dart';
-import 'package:aqua_inspector/features/auth/presentation/providers/auth_provider.dart';
-import 'package:aqua_inspector/core/theme/app_theme.dart';
+
+import '../../../../core/providers/config_providers.dart';
+import '../../../../core/theme/app_theme.dart';
+import '../../../auth/presentation/providers/auth_provider.dart';
+import '../viewmodels/samples_state.dart';
+import '../viewmodels/samples_viewmodel.dart';
+import '../widgets/sample_item_card.dart';
 
 class MySamplesScreen extends ConsumerStatefulWidget {
   const MySamplesScreen({super.key});
@@ -18,12 +21,12 @@ class _MySamplesScreenState extends ConsumerState<MySamplesScreen> {
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      _loadSamples();
+      loadSamples();
     });
   }
 
-  void _loadSamples() {
-    final authState = ref.read(authNotifierProvider);
+  void loadSamples() {
+    final authState = ref.read(authStatusNotifierProvider);
     if (authState.currentUser != null) {
       final today = DateTime.now();
       print('Loading samples for userId: ${authState.currentUser!.id}');
@@ -34,7 +37,7 @@ class _MySamplesScreenState extends ConsumerState<MySamplesScreen> {
   @override
   Widget build(BuildContext context) {
     final samplesState = ref.watch(samplesNotifierProvider);
-    final authState = ref.watch(authNotifierProvider);
+    final authState = ref.watch(authStatusNotifierProvider);
     final theme = Theme.of(context);
     final isDarkMode = ref.watch(darkModeProvider);
 
@@ -46,19 +49,28 @@ class _MySamplesScreenState extends ConsumerState<MySamplesScreen> {
           style: TextStyle(color: theme.appBarTheme.foregroundColor, fontWeight: FontWeight.bold),
         ),
         iconTheme: const IconThemeData(color: Colors.white),
-        actions: [IconButton(onPressed: _loadSamples, icon: const Icon(Icons.refresh), tooltip: 'Actualizar')],
+        actions: [IconButton(onPressed: loadSamples, icon: const Icon(Icons.refresh), tooltip: 'Actualizar')],
       ),
       body: Container(
         decoration: BoxDecoration(gradient: AppTheme.getBackgroundGradient(isDarkMode)),
         width: double.infinity,
         height: double.infinity,
         padding: const EdgeInsets.all(16.0),
-        child: _buildBody(samplesState, authState),
+        child: SampleScreenBody(samplesState: samplesState, authState: authState, loadSamples: loadSamples),
       ),
     );
   }
+}
 
-  Widget _buildBody(SamplesState samplesState, AuthState authState) {
+class SampleScreenBody extends StatelessWidget {
+  final SamplesState samplesState;
+  final AuthState authState;
+  final VoidCallback _loadSamples;
+
+  const SampleScreenBody({super.key, required this.samplesState, required this.authState, required VoidCallback loadSamples}) : _loadSamples = loadSamples;
+
+  @override
+  Widget build(BuildContext context) {
     if (authState.currentUser == null) {
       return const Center(
         child: Text('Usuario no autenticado', style: TextStyle(fontSize: 16, color: Colors.grey)),

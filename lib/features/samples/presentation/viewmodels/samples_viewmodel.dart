@@ -1,80 +1,66 @@
-import 'package:aqua_inspector/features/samples/domain/entities/sample_item.dart';
-import 'package:aqua_inspector/features/samples/presentation/providers/samples_provider.dart';
 import 'package:flutter/foundation.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
+import '../../domain/entities/sample_item.dart';
+import '../providers/samples_provider.dart';
+import 'samples_state.dart';
+
 part 'samples_viewmodel.g.dart';
-
-enum SamplesStatus { initial, loading, loaded, error }
-
-class SamplesState {
-  final SamplesStatus status;
-  final List<SampleItem> samples;
-  final String? errorMessage;
-  final bool isLoading;
-
-  const SamplesState({
-    this.status = SamplesStatus.initial,
-    this.samples = const [],
-    this.errorMessage,
-    this.isLoading = false,
-  });
-
-  SamplesState copyWith({
-    SamplesStatus? status,
-    List<SampleItem>? samples,
-    String? errorMessage,
-    bool? isLoading,
-  }) {
-    return SamplesState(
-      status: status ?? this.status,
-      samples: samples ?? this.samples,
-      errorMessage: errorMessage,
-      isLoading: isLoading ?? this.isLoading,
-    );
-  }
-
-  bool get hasData => samples.isNotEmpty;
-  bool get hasError => status == SamplesStatus.error;
-}
 
 @riverpod
 class SamplesNotifier extends _$SamplesNotifier {
   @override
-  SamplesState build() {
-    return const SamplesState();
-  }
+  SamplesState build() => const SamplesState();
 
   Future<void> loadSamples(int userId, DateTime date) async {
-    state = state.copyWith(
-      isLoading: true,
-      status: SamplesStatus.loading,
-      errorMessage: null,
-    );
+    state = state.copyWith(isLoading: true, status: SamplesStatus.loading, errorMessage: null);
 
     try {
-      final samplesRepository = await ref.read(samplesRepositoryProvider.future);
-      final samples = await samplesRepository.getSamplesSummaryByUser(userId, date);
-    samples.addAll(getDummySamples()); // Agregar muestras de prueba
-      state = state.copyWith(
-        samples: samples,
-        status: SamplesStatus.loaded,
-        isLoading: false,
-      );
+      final samplesRepository = await ref.read(samplesRepositoryProvider);
 
-      if (kDebugMode) {
-        print('Muestras cargadas exitosamente: ${samples.length} items');
-      }
+      // Cargar datos remotos
+      final remoteSamples = await samplesRepository.getSamplesSummaryByUser(userId, date);
+
+      // Cargar datos locales desde assets
+      final localSamples = await samplesRepository.getSampleItemsFromAssets();
+
+      // Combinar ambas listas
+      final allSamples = [...remoteSamples, ...localSamples];
+
+      state = state.copyWith(samples: allSamples, status: SamplesStatus.loaded, isLoading: false);
     } catch (e) {
-      state = state.copyWith(
-        status: SamplesStatus.error,
-        errorMessage: e.toString(),
-        isLoading: false,
-      );
+      // Si falla todo, intentar cargar solo datos locales como fallback
+      try {
+        final samplesRepository = await ref.read(samplesRepositoryProvider);
+        final localSamples = await samplesRepository.getSampleItemsFromAssets();
 
-      if (kDebugMode) {
-        print('Error cargando muestras: ${e.toString()}');
+        state = state.copyWith(
+          samples: localSamples,
+          status: SamplesStatus.loaded,
+          isLoading: false,
+          errorMessage: 'Mostrando datos locales. Error de red: ${e.toString()}',
+        );
+      } catch (localError) {
+        state = state.copyWith(status: SamplesStatus.error, errorMessage: 'Error cargando datos: ${localError.toString()}', isLoading: false);
+
+        if (kDebugMode) {
+          print('Error cargando muestras: ${localError.toString()}');
+        }
       }
+    }
+  }
+
+  /// Método para cargar solo datos locales
+  Future<void> loadLocalSamples() async {
+    state = state.copyWith(isLoading: true, status: SamplesStatus.loading, errorMessage: null);
+
+    try {
+      final samplesRepository = await ref.read(samplesRepositoryProvider);
+      final localSamples = await samplesRepository.getSampleItemsFromAssets();
+
+      state = state.copyWith(samples: localSamples, status: SamplesStatus.loaded, isLoading: false);
+    } catch (e) {
+      state = state.copyWith(status: SamplesStatus.error, errorMessage: 'Error cargando datos locales: ${e.toString()}', isLoading: false);
     }
   }
 
@@ -83,24 +69,10 @@ class SamplesNotifier extends _$SamplesNotifier {
   }
 
   void clearError() {
-    state = state.copyWith(
-      errorMessage: null,
-      status: state.samples.isNotEmpty ? SamplesStatus.loaded : SamplesStatus.initial,
-    );
+    state = state.copyWith(errorMessage: null, status: state.samples.isNotEmpty ? SamplesStatus.loaded : SamplesStatus.initial);
   }
 
   void clearSamples() {
     state = const SamplesState();
   }
- List<SampleItem> getDummySamples() {
-  List<SampleItem> samples = [
-   SampleItem(id: 1, samplingDatetime: DateTime.now(), sampleNumber: '102-20250707-04', waterAssociationName: 'Asada San Carlos', systemName: 'Tanque sureste', isSynced: false),
-   SampleItem(id: 2, samplingDatetime: DateTime.now(), sampleNumber: '102-20250707-05', waterAssociationName: 'Asada San Ramon', systemName: 'Tanque sureste', isSynced: false),
-   SampleItem(id: 3, samplingDatetime: DateTime.now(), sampleNumber: '102-20250707-06', waterAssociationName: 'Asada CHEPE', systemName: 'Tanque sureste', isSynced: false),
-  ];
-
-  return samples;
- 
- }
-
 }

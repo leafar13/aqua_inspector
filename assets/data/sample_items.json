@@ -1,0 +1,44 @@
+{
+    "samples": [
+        {
+            "id": 1,
+            "samplingDatetime": "2025-07-07T10:30:00Z",
+            "sampleNumber": "102-20250707-04",
+            "waterAssociationName": "Asada San Carlos",
+            "systemName": "Tanque sureste",
+            "isSynced": false
+        },
+        {
+            "id": 2,
+            "samplingDatetime": "2025-07-07T11:15:00Z",
+            "sampleNumber": "102-20250707-05",
+            "waterAssociationName": "Asada San Ramon",
+            "systemName": "Tanque sureste",
+            "isSynced": false
+        },
+        {
+            "id": 3,
+            "samplingDatetime": "2025-07-07T12:00:00Z",
+            "sampleNumber": "102-20250707-06",
+            "waterAssociationName": "Asada CHEPE",
+            "systemName": "Tanque sureste",
+            "isSynced": false
+        },
+        {
+            "id": 4,
+            "samplingDatetime": "2025-07-07T14:30:00Z",
+            "sampleNumber": "102-20250707-07",
+            "waterAssociationName": "Asada Heredia",
+            "systemName": "Tanque norte",
+            "isSynced": true
+        },
+        {
+            "id": 5,
+            "samplingDatetime": "2025-07-07T15:45:00Z",
+            "sampleNumber": "102-20250707-08",
+            "waterAssociationName": "Asada Cartago",
+            "systemName": "Tanque central",
+            "isSynced": true
+        }
+    ]
+}

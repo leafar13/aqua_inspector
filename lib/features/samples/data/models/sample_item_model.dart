@@ -1,45 +1,31 @@
-import 'package:aqua_inspector/features/samples/domain/entities/sample_item.dart';
+import 'package:freezed_annotation/freezed_annotation.dart';
 
-class SampleItemModel extends SampleItem {
-  const SampleItemModel({
-    required super.id,
-    required super.samplingDatetime,
-    required super.sampleNumber,
-    required super.waterAssociationName,
-    required super.systemName,
-    required super.isSynced,
-  });
+import '../../domain/entities/sample_item.dart';
 
-  factory SampleItemModel.fromJson(Map<String, dynamic> json) {
-    return SampleItemModel(
-      id: json['id'] as int,
-      samplingDatetime: DateTime.parse(json['samplingDatetime'] as String),
-      sampleNumber: json['sampleNumber'] as String,
-      waterAssociationName: json['waterAssociationName'] as String,
-      systemName: json['systemName'] as String,
-      isSynced: json['isSynced'] as bool? ?? false,
-    );
-  }
+part 'sample_item_model.freezed.dart';
+part 'sample_item_model.g.dart';
 
-  Map<String, dynamic> toJson() {
-    return {
-      'id': id,
-      'samplingDatetime': samplingDatetime.toIso8601String(),
-      'sampleNumber': sampleNumber,
-      'waterAssociationName': waterAssociationName,
-      'systemName': systemName,
-      'isSynced': isSynced,
-    };
-  }
+@freezed
+abstract class SampleItemModel with _$SampleItemModel {
+  const factory SampleItemModel({
+    required int id,
+    required DateTime samplingDatetime,
+    required String sampleNumber,
+    required String waterAssociationName,
+    required String systemName,
+    @Default(false) bool isSynced,
+  }) = _SampleItemModel;
 
-  SampleItem toEntity() {
-    return SampleItem(
-      id: id,
-      samplingDatetime: samplingDatetime,
-      sampleNumber: sampleNumber,
-      waterAssociationName: waterAssociationName,
-      systemName: systemName,
-      isSynced: isSynced,
-    );
-  }
+  factory SampleItemModel.fromJson(Map<String, dynamic> json) => _$SampleItemModelFromJson(json);
+
+  // Método para convertir a entidad de dominio (si aún la necesitas)
+  const SampleItemModel._();
+  SampleItem toEntity() => SampleItem(
+    id: id,
+    samplingDatetime: samplingDatetime,
+    sampleNumber: sampleNumber,
+    waterAssociationName: waterAssociationName,
+    systemName: systemName,
+    isSynced: isSynced,
+  );
 }

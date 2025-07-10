@@ -1,6 +1,7 @@
-import 'package:aqua_inspector/features/auth/presentation/widgets/auth_wrapper.dart';
-import 'package:aqua_inspector/features/splash/presentation/screen/splash_screen.dart';
 import 'package:flutter/material.dart';
+
+import '../../../auth/presentation/widgets/auth_wrapper.dart';
+import 'splash_screen.dart';
 
 class SplashWrapper extends StatefulWidget {
   @override

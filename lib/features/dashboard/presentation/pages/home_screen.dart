@@ -1,10 +1,11 @@
-import 'package:aqua_inspector/core/providers/config_providers.dart';
-import 'package:aqua_inspector/core/theme/app_theme.dart';
-import 'package:aqua_inspector/features/dashboard/presentation/widgets/custom_button_menu.dart';
-import 'package:aqua_inspector/features/samples/presentation/screens/my_samples_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:aqua_inspector/features/auth/presentation/providers/auth_provider.dart';
+
+import '../../../../core/providers/config_providers.dart';
+import '../../../../core/theme/app_theme.dart';
+import '../../../auth/presentation/providers/auth_provider.dart';
+import '../../../samples/presentation/screens/my_samples_screen.dart';
+import '../widgets/custom_button_menu.dart';
 
 class HomeScreen extends ConsumerStatefulWidget {
   const HomeScreen({super.key});
@@ -23,7 +24,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
       appBar: AppBar(
         title: Consumer(
           builder: (context, ref, child) {
-            final authState = ref.watch(authNotifierProvider);
+            final authState = ref.watch(authStatusNotifierProvider);
             return Text(
               'Bienvenido ${authState.currentUser?.fullName ?? ''}',
               style: TextStyle(color: theme.appBarTheme.foregroundColor, fontWeight: FontWeight.bold),
@@ -42,7 +43,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
             builder: (context, authProvider, child) {
               return IconButton(
                 icon: Icon(Icons.logout, color: theme.appBarTheme.foregroundColor),
-                onPressed: () => ref.read(authNotifierProvider.notifier).logout(),
+                onPressed: () => ref.read(authStatusNotifierProvider.notifier).logout(),
               );
             },
           ),
