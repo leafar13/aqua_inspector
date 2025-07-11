@@ -1,4 +1,4 @@
-import 'package:aqua_inspector/features/auth/domain/entities/user.dart';
+import '../entities/user.dart';
 
 abstract class AuthRepository {
   Future<AuthResult> login({required String username, required String password});

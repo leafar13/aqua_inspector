@@ -1,42 +1,76 @@
-import 'package:aqua_inspector/features/auth/presentation/providers/auth_provider.dart';
-import 'package:aqua_inspector/features/dashboard/presentation/widgets/custom_button_menu.dart';
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-class HomeScreen extends StatelessWidget {
+import '../../../../core/providers/config_providers.dart';
+import '../../../../core/theme/app_theme.dart';
+import '../../../auth/presentation/viewmodels/auth_viewmodel.dart';
+import '../../../samples/presentation/screens/my_samples_screen.dart';
+import '../widgets/custom_button_menu.dart';
+
+class HomeScreen extends ConsumerStatefulWidget {
   const HomeScreen({super.key});
 
   @override
+  ConsumerState<HomeScreen> createState() => _HomeScreenState();
+}
+
+class _HomeScreenState extends ConsumerState<HomeScreen> {
+  @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final isDarkMode = ref.watch(darkModeProvider);
+
     return Scaffold(
       appBar: AppBar(
-        title: Consumer<AuthProvider>(
-          builder: (context, authProvider, child) {
-            return Text('Bienvenido ${authProvider.currentUser?.fullName ?? ''}');
-          },
+        title: Text(
+          'Bienvenido ${ref.watch(authViewModelProvider).currentUser?.fullName ?? ''}',
+          style: TextStyle(color: theme.appBarTheme.foregroundColor, fontWeight: FontWeight.bold),
         ),
-        backgroundColor: Colors.blue,
         actions: [
-          Consumer<AuthProvider>(
-            builder: (context, authProvider, child) {
-              return IconButton(icon: const Icon(Icons.logout), onPressed: () => authProvider.logout());
+          IconButton(
+            icon: Icon(Icons.settings, color: theme.appBarTheme.foregroundColor),
+            onPressed: () {
+              ref.read(darkModeProvider.notifier).toggle();
             },
+          ),
+          SizedBox.shrink(),
+          IconButton(
+            icon: Icon(Icons.logout, color: theme.appBarTheme.foregroundColor),
+            onPressed: () => ref.read(authViewModelProvider.notifier).logout(),
           ),
         ],
       ),
 
       body: Container(
+        decoration: BoxDecoration(gradient: AppTheme.getBackgroundGradient(isDarkMode)),
         child: Center(
           child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            mainAxisSize: MainAxisSize.min,
+            mainAxisAlignment: MainAxisAlignment.start,
+            mainAxisSize: MainAxisSize.max,
             children: [
+              // Logo
+              Hero(
+                tag: 'logo',
+                transitionOnUserGestures: true,
+                child: Image.asset('assets/images/logo.png', width: 150, height: 150, alignment: Alignment.center),
+              ),
+              Hero(
+                tag: 'logoText',
+                child: Image.asset('assets/images/texto.png', width: 200, fit: BoxFit.contain),
+              ),
+              SizedBox(height: 60),
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   CustomButtonMenu(tittle: 'Tomar muestra', onPressed: () {}, icon: Icons.science_outlined),
                   SizedBox(width: 20),
-                  CustomButtonMenu(tittle: 'Mis muestras', onPressed: () {}, icon: Icons.science),
+                  CustomButtonMenu(
+                    tittle: 'Mis muestras',
+                    onPressed: () {
+                      Navigator.push(context, MaterialPageRoute(builder: (context) => const MySamplesScreen()));
+                    },
+                    icon: Icons.science,
+                  ),
                 ],
               ),
               SizedBox(height: 20),

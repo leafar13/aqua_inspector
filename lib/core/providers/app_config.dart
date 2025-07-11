@@ -33,7 +33,7 @@ class AppConfig {
     return true;
   }
 
-  /// Método para debuggear la configuración (solo en modo debug)
+  /// Método para debug la configuración (solo en modo debug)
   static void printConfig() {
     if (!debugMode) return;
 

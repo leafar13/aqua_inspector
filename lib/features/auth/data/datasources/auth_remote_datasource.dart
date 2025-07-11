@@ -1,61 +1,47 @@
-import 'dart:convert';
-import 'package:http/http.dart' as http;
-import 'package:aqua_inspector/features/auth/data/models/login_model.dart';
-import 'package:aqua_inspector/core/config/app_config.dart';
+import 'package:dio/dio.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:riverpod_annotation/riverpod_annotation.dart';
 
-abstract class AuthRemoteDataSource {
-  Future<LoginModel> login({required String username, required String password});
+import '../../../../core/network/dio_client.dart';
+import '../../../../core/providers/app_config.dart';
+import '../../domain/repositories/auth_remote_repository.dart';
+import '../models/login_model.dart';
+
+part 'auth_remote_datasource.g.dart';
+
+@riverpod
+AuthRemoteDataSource authRemoteDataSource(Ref ref) {
+  return AuthRemoteDataSourceImpl(ref.watch(dioClientProvider));
 }
 
 class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
-  final http.Client client;
-  final String baseUrl;
+  final Dio _dio;
 
-  AuthRemoteDataSourceImpl({required this.client, this.baseUrl = ''});
+  AuthRemoteDataSourceImpl(this._dio);
 
   @override
   Future<LoginModel> login({required String username, required String password}) async {
-    final url = Uri.parse('$baseUrl${AppConfig.authLoginEndpoint}');
-
-    final body = {'username': username, 'password': password};
-
     try {
-      final response = await client.post(url, headers: AppConfig.defaultHeaders, body: json.encode(body));
+      final response = await _dio.post(AppConfig.authLoginEndpoint, data: {'username': username, 'password': password});
 
       if (response.statusCode == 200) {
-        final Map<String, dynamic> jsonData = json.decode(response.body);
-        return LoginModel.fromJson(jsonData);
+        return LoginModel.fromJson(response.data);
       } else {
-        // Manejar diferentes códigos de error
-        String errorMessage;
-        switch (response.statusCode) {
-          case 401 || 403:
-            errorMessage = 'Credenciales incorrectas';
-            break;
-          case 404:
-            errorMessage = 'Servicio no encontrado';
-            break;
-          case 500:
-            errorMessage = 'Error interno del servidor';
-            break;
-          default:
-            errorMessage = 'Error de conexión: ${response.statusCode}';
-        }
-        throw AuthDataSourceException(errorMessage);
+        throw AuthDataSourceException('Error en login', statusCode: response.statusCode);
       }
+    } on DioException catch (e) {
+      throw AuthDataSourceException('Error de conexión', statusCode: e.response?.statusCode);
     } catch (e) {
-      if (e is AuthDataSourceException) {
-        rethrow;
-      }
-      throw AuthDataSourceException('Error de conexión: ${e.toString()}');
+      throw AuthDataSourceException('Error inesperado: ${e.toString()}');
     }
   }
 }
 
 class AuthDataSourceException implements Exception {
   final String message;
+  final int? statusCode;
 
-  AuthDataSourceException(this.message);
+  AuthDataSourceException(this.message, {this.statusCode});
 
   @override
   String toString() => message;
