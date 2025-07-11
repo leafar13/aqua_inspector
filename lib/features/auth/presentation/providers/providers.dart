@@ -6,8 +6,7 @@ import '../../data/datasources/auth_remote_datasource.dart';
 import '../../data/repositories/auth_repository_impl.dart';
 import '../../domain/repositories/auth_repository.dart';
 
-// IMPORTANTE: Esta línea es obligatoria
-part 'auth_provider.g.dart';
+part 'providers.g.dart';
 
 enum AuthStatus { initial, loading, authenticated, unauthenticated, error }
 
