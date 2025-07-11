@@ -3,7 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 import '../../data/models/auth_state.dart';
-import '../providers/auth_provider.dart';
+import '../providers/providers.dart';
 import 'login_view_model.dart';
 
 part 'auth_viewmodel.g.dart';

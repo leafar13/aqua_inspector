@@ -1,7 +1,7 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
 
 import '../../domain/entities/user.dart';
-import '../../presentation/providers/auth_provider.dart';
+import '../../presentation/providers/providers.dart';
 
 part 'auth_state.freezed.dart';
 
