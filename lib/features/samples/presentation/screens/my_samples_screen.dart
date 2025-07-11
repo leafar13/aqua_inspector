@@ -1,10 +1,10 @@
-import 'package:aqua_inspector/features/auth/data/models/auth_state.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../../core/providers/config_providers.dart';
 import '../../../../core/theme/app_theme.dart';
-import '../../../auth/presentation/providers/auth_provider.dart';
+import '../../../auth/data/models/auth_state.dart';
+import '../../../auth/presentation/viewmodels/auth_viewmodel.dart';
 import '../viewmodels/samples_state.dart';
 import '../viewmodels/samples_viewmodel.dart';
 import '../widgets/sample_item_card.dart';
@@ -26,18 +26,18 @@ class _MySamplesScreenState extends ConsumerState<MySamplesScreen> {
   }
 
   void loadSamples() {
-    final authState = ref.read(authStatusNotifierProvider);
+    final authState = ref.read(authViewModelProvider);
     if (authState.currentUser != null) {
       final today = DateTime.now();
       print('Loading samples for userId: ${authState.currentUser!.id}');
-      ref.read(samplesNotifierProvider.notifier).loadSamples(authState.currentUser!.id, today);
+      ref.read(samplesViewModelProvider.notifier).loadSamples(authState.currentUser!.id, today);
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    final samplesState = ref.watch(samplesNotifierProvider);
-    final authState = ref.watch(authStatusNotifierProvider);
+    final samplesState = ref.watch(samplesViewModelProvider);
+    final authState = ref.watch(authViewModelProvider);
     final theme = Theme.of(context);
     final isDarkMode = ref.watch(darkModeProvider);
 

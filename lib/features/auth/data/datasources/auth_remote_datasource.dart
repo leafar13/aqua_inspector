@@ -1,17 +1,18 @@
 import 'package:dio/dio.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 import '../../../../core/network/dio_client.dart';
 import '../../../../core/providers/app_config.dart';
+import '../../domain/repositories/auth_remote_repository.dart';
 import '../models/login_model.dart';
 
-abstract class AuthRemoteDataSource {
-  Future<LoginModel> login({required String username, required String password});
-}
+part 'auth_remote_datasource.g.dart';
 
-final authRemoteDataSourceProvider = Provider<AuthRemoteDataSource>((ref) {
+@riverpod
+AuthRemoteDataSource authRemoteDataSource(Ref ref) {
   return AuthRemoteDataSourceImpl(ref.watch(dioClientProvider));
-});
+}
 
 class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
   final Dio _dio;

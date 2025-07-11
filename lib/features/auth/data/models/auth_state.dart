@@ -1,6 +1,7 @@
-import 'package:aqua_inspector/features/auth/domain/entities/user.dart';
-import 'package:aqua_inspector/features/auth/presentation/providers/auth_provider.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
+
+import '../../domain/entities/user.dart';
+import '../../presentation/providers/auth_provider.dart';
 
 part 'auth_state.freezed.dart';
 

@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../../core/theme/app_theme.dart';
-import '../providers/auth_provider.dart';
+import '../viewmodels/auth_viewmodel.dart';
 
 class LoginScreen extends ConsumerStatefulWidget {
   const LoginScreen({super.key});
@@ -76,7 +76,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                               TextFormField(
                                 keyboardType: TextInputType.name,
                                 controller: _usernameController,
-                                enabled: !ref.watch(authStatusNotifierProvider).isLoading, // Deshabilitar durante loading
+                                enabled: !ref.watch(authViewModelProvider).isLoading, // Deshabilitar durante loading
                                 decoration: const InputDecoration(fillColor: Colors.white, filled: true, prefixIcon: Icon(Icons.person), labelText: 'Usuario'),
                                 validator: (value) {
                                   if (value == null || value.trim().isEmpty) {
@@ -89,7 +89,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                               // Campo de contraseña
                               TextFormField(
                                 controller: _passwordController,
-                                enabled: !ref.watch(authStatusNotifierProvider).isLoading, // Deshabilitar durante loading
+                                enabled: !ref.watch(authViewModelProvider).isLoading, // Deshabilitar durante loading
                                 obscureText: _obscurePassword,
                                 decoration: InputDecoration(
                                   fillColor: Colors.white,
@@ -120,8 +120,8 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                               // Botón de login con estado del provider
                               Consumer(
                                 builder: (context, ref, child) {
-                                  final authState = ref.watch(authStatusNotifierProvider);
-                                  final authNotifier = ref.read(authStatusNotifierProvider.notifier);
+                                  final authState = ref.watch(authViewModelProvider);
+                                  final authNotifier = ref.read(authViewModelProvider.notifier);
                                   return Column(
                                     children: [
                                       // Mostrar error si existe
@@ -188,7 +188,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
 
   /// Maneja el proceso de login
   void _handleLogin(BuildContext context) async {
-    final authNotifier = ref.read(authStatusNotifierProvider.notifier);
+    final authNotifier = ref.read(authViewModelProvider.notifier);
 
     // Limpiar errores anteriores
     authNotifier.clearError();

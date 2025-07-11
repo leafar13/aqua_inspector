@@ -3,7 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../../core/providers/config_providers.dart';
 import '../../../../core/theme/app_theme.dart';
-import '../../../auth/presentation/providers/auth_provider.dart';
+import '../../../auth/presentation/viewmodels/auth_viewmodel.dart';
 import '../../../samples/presentation/screens/my_samples_screen.dart';
 import '../widgets/custom_button_menu.dart';
 
@@ -22,14 +22,9 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
 
     return Scaffold(
       appBar: AppBar(
-        title: Consumer(
-          builder: (context, ref, child) {
-            final authState = ref.watch(authStatusNotifierProvider);
-            return Text(
-              'Bienvenido ${authState.currentUser?.fullName ?? ''}',
-              style: TextStyle(color: theme.appBarTheme.foregroundColor, fontWeight: FontWeight.bold),
-            );
-          },
+        title: Text(
+          'Bienvenido ${ref.watch(authViewModelProvider).currentUser?.fullName ?? ''}',
+          style: TextStyle(color: theme.appBarTheme.foregroundColor, fontWeight: FontWeight.bold),
         ),
         actions: [
           IconButton(
@@ -39,13 +34,9 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
             },
           ),
           SizedBox.shrink(),
-          Consumer(
-            builder: (context, authProvider, child) {
-              return IconButton(
-                icon: Icon(Icons.logout, color: theme.appBarTheme.foregroundColor),
-                onPressed: () => ref.read(authStatusNotifierProvider.notifier).logout(),
-              );
-            },
+          IconButton(
+            icon: Icon(Icons.logout, color: theme.appBarTheme.foregroundColor),
+            onPressed: () => ref.read(authViewModelProvider.notifier).logout(),
           ),
         ],
       ),

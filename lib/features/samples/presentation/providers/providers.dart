@@ -1,14 +1,14 @@
-import 'package:aqua_inspector/features/samples/domain/entities/samples_remote_data_source.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 import '../../../../core/network/dio_client.dart';
-import '../../data/datasources/samples_remote_datasource.dart';
 import '../../data/datasources/samples_local_datasource.dart';
+import '../../data/datasources/samples_remote_datasource.dart';
 import '../../data/repositories/samples_repository_impl.dart';
+import '../../domain/entities/samples_remote_data_source.dart';
 import '../../domain/repositories/samples_repository.dart';
 
-part 'samples_provider.g.dart';
+part 'providers.g.dart';
 
 @riverpod
 SamplesRemoteDataSource samplesRemoteDataSource(Ref ref) {

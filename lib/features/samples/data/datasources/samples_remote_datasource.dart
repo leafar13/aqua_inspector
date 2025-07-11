@@ -1,7 +1,7 @@
-import 'package:aqua_inspector/features/samples/domain/entities/samples_remote_data_source.dart';
 import 'package:dio/dio.dart';
 import 'package:intl/intl.dart';
 
+import '../../domain/entities/samples_remote_data_source.dart';
 import '../models/sample_item_model.dart';
 
 class SamplesRemoteDataSourceImpl implements SamplesRemoteDataSource {

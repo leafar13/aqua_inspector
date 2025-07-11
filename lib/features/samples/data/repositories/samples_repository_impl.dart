@@ -1,9 +1,8 @@
-import 'package:aqua_inspector/features/samples/domain/entities/samples_remote_data_source.dart';
-
 import '../../domain/entities/sample_item.dart';
+import '../../domain/entities/samples_remote_data_source.dart';
 import '../../domain/repositories/samples_repository.dart';
-import '../datasources/samples_remote_datasource.dart';
 import '../datasources/samples_local_datasource.dart';
+import '../datasources/samples_remote_datasource.dart';
 
 class SamplesRepositoryImpl implements SamplesRepository {
   final SamplesRemoteDataSource remoteDataSource;

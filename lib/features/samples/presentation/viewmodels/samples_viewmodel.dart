@@ -2,13 +2,13 @@ import 'package:flutter/foundation.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 import '../../domain/entities/sample_item.dart';
-import '../providers/samples_provider.dart';
+import '../providers/providers.dart';
 import 'samples_state.dart';
 
 part 'samples_viewmodel.g.dart';
 
 @riverpod
-class SamplesNotifier extends _$SamplesNotifier {
+class SamplesViewModel extends _$SamplesViewModel {
   @override
   SamplesState build() => const SamplesState();
 
@@ -42,37 +42,7 @@ class SamplesNotifier extends _$SamplesNotifier {
         );
       } catch (localError) {
         state = state.copyWith(status: SamplesStatus.error, errorMessage: 'Error cargando datos: ${localError.toString()}', isLoading: false);
-
-        if (kDebugMode) {
-          print('Error cargando muestras: ${localError.toString()}');
-        }
       }
     }
-  }
-
-  /// Método para cargar solo datos locales
-  Future<void> loadLocalSamples() async {
-    state = state.copyWith(isLoading: true, status: SamplesStatus.loading, errorMessage: null);
-
-    try {
-      final samplesRepository = await ref.read(samplesRepositoryProvider);
-      final localSamples = await samplesRepository.getSampleItemsFromAssets();
-
-      state = state.copyWith(samples: localSamples, status: SamplesStatus.loaded, isLoading: false);
-    } catch (e) {
-      state = state.copyWith(status: SamplesStatus.error, errorMessage: 'Error cargando datos locales: ${e.toString()}', isLoading: false);
-    }
-  }
-
-  Future<void> refreshSamples(int userId, DateTime date) async {
-    await loadSamples(userId, date);
-  }
-
-  void clearError() {
-    state = state.copyWith(errorMessage: null, status: state.samples.isNotEmpty ? SamplesStatus.loaded : SamplesStatus.initial);
-  }
-
-  void clearSamples() {
-    state = const SamplesState();
   }
 }

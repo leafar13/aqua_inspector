@@ -4,13 +4,14 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../dashboard/presentation/pages/home_screen.dart';
 import '../pages/login_screen.dart';
 import '../providers/auth_provider.dart';
+import '../viewmodels/auth_viewmodel.dart';
 
 class AuthWrapper extends ConsumerWidget {
   const AuthWrapper({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final authState = ref.watch(authStatusNotifierProvider);
+    final authState = ref.watch(authViewModelProvider);
 
     switch (authState.status) {
       case AuthStatus.initial:
