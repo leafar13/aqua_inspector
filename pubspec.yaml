@@ -66,6 +66,7 @@ dev_dependencies:
   custom_lint: ^0.7.5
   riverpod_lint: ^2.6.5
   pretty_dio_logger: ^1.3.1  # Para logging en desarrollo
+  flutter_lints: ^6.0.0
 
 flutter_launcher_icons:
   android: true

@@ -1,0 +1,20 @@
+{
+  "// 📝 Configuración para auto-formatear Dart al guardar": "",
+  "[dart]": {
+    "editor.formatOnSave": true,
+    "editor.codeActionsOnSave": {
+      "source.organizeImports": "explicit",
+      "source.fixAll": "explicit"
+    }
+  },
+
+  "// 🎯 Configuración específica de Dart": "",
+  "dart.organizeDirectives": true,
+  "dart.enableSdkFormatter": true,
+  "dart.lineLength": 80,
+
+  "// 💾 Auto-guardado y formateo": "",
+  "files.autoSave": "afterDelay",
+  "files.autoSaveDelay": 1000,
+  "editor.formatOnSave": true
+}
